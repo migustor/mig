@@ -1,0 +1,20 @@
+"""
+Page information for page 836
+"""
+from common.config.base_urls import PROJECT_BASE_URLS
+
+def get_page_836_url(project_name):
+    """
+    Returns the URL for page 836 for the specified project
+    
+    Args:
+        project_name: Name of the project (e.g., "ra_eu")
+        
+    Returns:
+        str: URL for page 836
+    """
+    base_url = PROJECT_BASE_URLS.get(project_name, "")
+    if not base_url:
+        return None
+        
+    return f"{base_url}index.cfm?page_id=836"

@@ -1,0 +1,344 @@
+<<<<<<< .mine
+import sys
+import logging
+import functools
+import traceback
+from datetime import datetime
+import os
+
+def jenkins_aware(screenshot_dir=None):
+    """
+    Decorator that makes test functions Jenkins-aware.
+    Handles exceptions and sets appropriate exit codes for Jenkins.
+
+    Args:
+        screenshot_dir: Directory to save screenshots (optional)
+
+    Returns:
+        Decorated function
+    """
+    # Set default screenshot directory if not provided
+    if not screenshot_dir:
+        screenshot_dir = r"C:\Users\alexandru.rabdau\Desktop\E2E"
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Ensure screenshot directory exists
+            os.makedirs(screenshot_dir, exist_ok=True)
+
+            # Get the function name for reporting
+            func_name = func.__name__
+            module_name = func.__module__
+
+            try:
+                # Run the actual test function
+                result = func(*args, **kwargs)
+
+                # Handle dictionary results that may indicate test failure
+                if isinstance(result, dict) and not result.get('success', True):
+                    error_msg = result.get('error', 'Test returned failure status')
+                    step = result.get('step', 'unknown')
+
+                    # Найти драйвер среди аргументов
+                    driver = None
+                    for arg in args:
+                        if hasattr(arg, 'save_screenshot'):
+                            driver = arg
+                            break
+
+                    # Take error screenshot if a driver is available
+                    if driver:
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        filename = os.path.join(screenshot_dir, f"error_{module_name}_{step}_{timestamp}.png")
+                        try:
+                            driver.save_screenshot(filename)
+                            logging.info(f"Error screenshot saved to {filename}")
+                            # Добавляем путь к скриншоту в результат
+                            if isinstance(result, dict):
+                                result['screenshot'] = filename
+                        except Exception as screenshot_error:
+                            logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                    logging.error(f"Test failed at step '{step}': {error_msg}")
+
+                    if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                        sys.exit(1)  # Signal failure to Jenkins
+
+                    return result
+
+                # If we got here, the test succeeded
+                logging.info(f"Test '{module_name}.{func_name}' completed successfully")
+                return result
+
+            except KeyboardInterrupt:
+                # Allow keyboard interrupts to function normally
+                logging.warning("Test interrupted by user")
+                sys.exit(130)  # Standard exit code for SIGINT
+
+            except Exception as e:
+                # Log the exception with trace for debugging
+                logging.error(f"Test '{module_name}.{func_name}' failed with exception: {str(e)}")
+                logging.error(traceback.format_exc())
+
+                # Take error screenshot if a driver is available
+                driver = None
+                for arg in args:
+                    if hasattr(arg, 'save_screenshot'):
+                        driver = arg
+                        break
+
+                screenshot_path = None
+                if driver:
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(screenshot_dir, f"error_{module_name}_{timestamp}.png")
+                    try:
+                        driver.save_screenshot(filename)
+                        screenshot_path = filename
+                        logging.info(f"Error screenshot saved to {filename}")
+                    except Exception as screenshot_error:
+                        logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                # Если указан параметр exit_on_failure, завершаем выполнение с кодом ошибки
+                if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                    sys.exit(1)  # Signal failure to Jenkins
+
+                # Иначе возвращаем словарь с информацией об ошибке
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "step": func_name,
+                    "screenshot": screenshot_path
+                }
+
+        return wrapper
+||||||| .r873
+import sys
+import logging
+import functools
+import traceback
+from datetime import datetime
+import os
+
+def jenkins_aware(screenshot_dir=None):
+    """
+    Decorator that makes test functions Jenkins-aware.
+    Handles exceptions and sets appropriate exit codes for Jenkins.
+
+    Args:
+        screenshot_dir: Directory to save screenshots (optional)
+
+    Returns:
+        Decorated function
+    """
+    # Set default screenshot directory if not provided
+    if not screenshot_dir:
+        screenshot_dir = r"E:\Documents\Error_Screens"
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Ensure screenshot directory exists
+            os.makedirs(screenshot_dir, exist_ok=True)
+
+            # Get the function name for reporting
+            func_name = func.__name__
+            module_name = func.__module__
+
+            try:
+                # Run the actual test function
+                result = func(*args, **kwargs)
+
+                # Handle dictionary results that may indicate test failure
+                if isinstance(result, dict) and not result.get('success', True):
+                    error_msg = result.get('error', 'Test returned failure status')
+                    step = result.get('step', 'unknown')
+
+                    # Найти драйвер среди аргументов
+                    driver = None
+                    for arg in args:
+                        if hasattr(arg, 'save_screenshot'):
+                            driver = arg
+                            break
+
+                    # Take error screenshot if a driver is available
+                    if driver:
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        filename = os.path.join(screenshot_dir, f"error_{module_name}_{step}_{timestamp}.png")
+                        try:
+                            driver.save_screenshot(filename)
+                            logging.info(f"Error screenshot saved to {filename}")
+                            # Добавляем путь к скриншоту в результат
+                            if isinstance(result, dict):
+                                result['screenshot'] = filename
+                        except Exception as screenshot_error:
+                            logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                    logging.error(f"Test failed at step '{step}': {error_msg}")
+
+                    if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                        sys.exit(1)  # Signal failure to Jenkins
+
+                    return result
+
+                # If we got here, the test succeeded
+                logging.info(f"Test '{module_name}.{func_name}' completed successfully")
+                return result
+
+            except KeyboardInterrupt:
+                # Allow keyboard interrupts to function normally
+                logging.warning("Test interrupted by user")
+                sys.exit(130)  # Standard exit code for SIGINT
+
+            except Exception as e:
+                # Log the exception with trace for debugging
+                logging.error(f"Test '{module_name}.{func_name}' failed with exception: {str(e)}")
+                logging.error(traceback.format_exc())
+
+                # Take error screenshot if a driver is available
+                driver = None
+                for arg in args:
+                    if hasattr(arg, 'save_screenshot'):
+                        driver = arg
+                        break
+
+                screenshot_path = None
+                if driver:
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(screenshot_dir, f"error_{module_name}_{timestamp}.png")
+                    try:
+                        driver.save_screenshot(filename)
+                        screenshot_path = filename
+                        logging.info(f"Error screenshot saved to {filename}")
+                    except Exception as screenshot_error:
+                        logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                # Если указан параметр exit_on_failure, завершаем выполнение с кодом ошибки
+                if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                    sys.exit(1)  # Signal failure to Jenkins
+
+                # Иначе возвращаем словарь с информацией об ошибке
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "step": func_name,
+                    "screenshot": screenshot_path
+                }
+
+        return wrapper
+=======
+import sys
+import logging
+import functools
+import traceback
+from datetime import datetime
+import os
+
+def jenkins_aware(screenshot_dir=None):
+    """
+    Decorator that makes test functions Jenkins-aware.
+    Handles exceptions and sets appropriate exit codes for Jenkins.
+
+    Args:
+        screenshot_dir: Directory to save screenshots (optional)
+
+    Returns:
+        Decorated function
+    """
+    # Set default screenshot directory if not provided
+    if not screenshot_dir:
+        screenshot_dir = r"E:\Documents\Error_Screens"
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Ensure screenshot directory exists
+            os.makedirs(screenshot_dir, exist_ok=True)
+
+            # Get the function name for reporting
+            func_name = func.__name__
+            module_name = func.__module__
+
+            try:
+                # Run the actual test function
+                result = func(*args, **kwargs)
+
+                # Handle dictionary results that may indicate test failure
+                if isinstance(result, dict) and not result.get('success', True):
+                    error_msg = result.get('error', 'Test returned failure status')
+                    step = result.get('step', 'unknown')
+
+                    # Найти драйвер среди аргументов
+                    driver = None
+                    for arg in args:
+                        if hasattr(arg, 'save_screenshot'):
+                            driver = arg
+                            break
+
+                    # Take error screenshot if a driver is available
+                    if driver:
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        filename = os.path.join(screenshot_dir, f"error_{module_name}_{step}_{timestamp}.png")
+                        try:
+                            driver.save_screenshot(filename)
+                            logging.info(f"Error screenshot saved to {filename}")
+                            # Добавляем путь к скриншоту в результат
+                            if isinstance(result, dict):
+                                result['screenshot'] = filename
+                        except Exception as screenshot_error:
+                            logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                    logging.error(f"Test failed at step '{step}': {error_msg}")
+
+                    if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                        sys.exit(1)  # Signal failure to Jenkins
+
+                    return result
+
+                # If we got here, the test succeeded
+                logging.info(f"Test '{module_name}.{func_name}' completed successfully")
+                return result
+
+            except KeyboardInterrupt:
+                # Allow keyboard interrupts to function normally
+                logging.warning("Test interrupted by user")
+                sys.exit(130)  # Standard exit code for SIGINT
+
+            except Exception as e:
+                # Log the exception with trace for debugging
+                logging.error(f"Test '{module_name}.{func_name}' failed with exception: {str(e)}")
+                logging.error(traceback.format_exc())
+
+                # Take error screenshot if a driver is available
+                driver = None
+                for arg in args:
+                    if hasattr(arg, 'save_screenshot'):
+                        driver = arg
+                        break
+
+                screenshot_path = None
+                if driver:
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(screenshot_dir, f"error_{module_name}_{timestamp}.png")
+                    try:
+                        driver.save_screenshot(filename)
+                        screenshot_path = filename
+                        logging.info(f"Error screenshot saved to {filename}")
+                    except Exception as screenshot_error:
+                        logging.error(f"Failed to take error screenshot: {str(screenshot_error)}")
+
+                # Если указан параметр exit_on_failure, завершаем выполнение с кодом ошибки
+                if 'exit_on_failure' in kwargs and kwargs['exit_on_failure']:
+                    sys.exit(1)  # Signal failure to Jenkins
+
+                # Иначе возвращаем словарь с информацией об ошибке
+                return {
+                    "success": False,
+                    "error": str(e),
+                    "step": func_name,
+                    "screenshot": screenshot_path
+                }
+
+        return wrapper
+>>>>>>> .r873
+    return decorator

@@ -1,0 +1,81 @@
+{
+  tests: 
+  [
+    {
+      name: '121993',
+      command: 'python -m tests.121993'
+    },
+    {
+      name: '123833',
+      command: 'python -m tests.123833'
+    },
+    {
+      name: '124238',
+      command: 'python -m tests.124238'
+    },
+    {
+      name: '121448',
+      command: 'python -m tests.121448'
+    },
+    {
+      name: '112360',
+      command: 'python -m tests.112360'
+    },
+    {
+      name: '123690',
+      command: 'python -m tests.123690'
+    },
+    {
+      name: '122857',
+      command: 'python -m tests.122857'
+    },
+  	{
+      name: '120612',
+      command: 'python -m tests.120612'
+    },
+  	{
+      name: '123991',
+      command: 'python -m tests.123991'
+    },
+	  {
+      name: '121713',
+      command: 'python -m tests.121713'
+    },
+  	{
+      name: '123500',
+      command: 'python -m tests.123500'
+    },
+	  {
+      name: '125242',
+      command: 'python -m tests.125242'
+    },
+	{
+      name: '125318',
+      command: 'python -m tests.125318'
+    },
+	{
+      name: '125924',
+      command: 'python -m tests.125924'
+    },
+	{
+      name: '104988',
+      command: 'python -m tests.104988'
+    },
+	{
+      name: '123216',
+      command: 'python -m tests.123216'
+    },
+	{
+      name: '124284',
+      command: 'python -m tests.124284'
+    },
+    {
+      name: '121077',
+      command: 'python -m tests.121077'
+    },
+    {
+      name: '125431',
+      command: 'python -m tests.125431'
+    }
+  ]
+}

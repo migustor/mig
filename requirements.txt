@@ -1,0 +1,15 @@
+Selenium
+Pandas
+Requests
+BeautifulSoup4
+Lxml
+Aiohttp
+asyncio
+python-dotenv
+xlrd
+pyautogui
+selenium-wire
+psutil
+webdriver-manager
+numpy
+matplotlib
